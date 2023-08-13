@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type ZillowData struct {
@@ -30,6 +31,7 @@ func GetAppreciationRate(zpid string) {
 	//Get Data from Zillow
 	data := ZillowData{}
 
+	zpid = normalize(zpid)
 	if err := json.Unmarshal(getData(zpid), &data); err != nil {
 		fmt.Println("Can not unmarshal JSON")
 		return
@@ -45,6 +47,18 @@ func GetAppreciationRate(zpid string) {
 
 	fmt.Printf("You apprecition rate for zpid %v is\n", zpid)
 	fmt.Printf("%.2f%%\n", result*100)
+}
+
+// Private methods.
+func normalize(zpid string) (normalized string) {
+	parts := strings.Split(zpid, "_")
+
+	if len(parts) > 0 {
+		normalized = parts[0]
+	} else {
+		fmt.Println("zpid is missing!")
+	}
+	return
 }
 
 func getData(zpid string) (body []byte) {
